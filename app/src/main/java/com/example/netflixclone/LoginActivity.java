@@ -10,18 +10,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button login, signUp, forgot;
     ImageButton im;
-    private static final String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-    private static final String phonePattern = "^\\+\\d{10,}$\n";
-    private static final Pattern emailpattern = Pattern.compile(emailPattern);
-    private static final Pattern phonepattern = Pattern.compile(phonePattern);
     EditText email, pass;
+    ValidationChecks validationChecks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +23,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         email = (EditText) findViewById(R.id.email);
         pass = (EditText) findViewById(R.id.password);
+        validationChecks = new ValidationChecks();
         login = (Button) findViewById(R.id.signIn);
         signUp = (Button) findViewById(R.id.signUp);
         im = (ImageButton) findViewById(R.id.im);
@@ -38,18 +33,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         im.setOnClickListener(this);
         forgot.setOnClickListener(this);
 
+
     }
 
     @Override
     public void onClick(View v) {
 
         if(v.getId() == R.id.signIn){
-            if(validation_checks()){
+            if(validationChecks.isEmailOrPhoneValid(email.getText().toString()) ||
+                    validationChecks.isPasswordValid(pass.getText().toString())){
                 Intent login_intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(login_intent);
             }
             else{
-                Toast.makeText(LoginActivity.this, "Incorrect Email/Phone", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Incorrect Email/Phone or Password Syntax",
+                        Toast.LENGTH_SHORT).show();
             }
         }
         else if(v.getId() == R.id.signUp){
@@ -64,20 +62,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             //make activity
         }
 
-    }
-
-    private boolean validation_checks(){
-        boolean valid = false;
-        if(email.getText().toString() != null && pass.getText().toString() != null){
-            Matcher emailmatcher = emailpattern.matcher(email.getText().toString());
-            Matcher phonematcher = phonepattern.matcher(email.getText().toString());
-            if(emailmatcher.matches() || phonematcher.matches()){
-                return true;
-            }
-            else{
-                return false;
-            }
-        }
-        return false;
     }
 }

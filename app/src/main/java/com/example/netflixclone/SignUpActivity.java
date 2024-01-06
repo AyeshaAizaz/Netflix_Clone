@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -14,16 +16,28 @@ public class SignUpActivity extends AppCompatActivity {
 
     Button start;
     ImageButton im1;
+    EditText email1;
+    ValidationChecks validationChecks;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        email1 = (EditText) findViewById(R.id.email1);
+        validationChecks = new ValidationChecks();
         start = (Button) findViewById(R.id.start);
         im1 = (ImageButton) findViewById(R.id.im1);
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                replaceFragment(new SignUpFragment());
+                if(validationChecks.isEmailOrPhoneValid(email1.getText().toString())) {
+                    String email_sign = email1.getText().toString();
+                    SignUpFragment signUpFragment = SignUpFragment.newInstance(email_sign);
+                    replaceFragment(new SignUpFragment());
+                }
+                else{
+                    Toast.makeText(SignUpActivity.this, "Incorrect Email/Phone Syntax",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
