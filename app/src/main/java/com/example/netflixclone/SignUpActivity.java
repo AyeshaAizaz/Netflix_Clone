@@ -29,13 +29,18 @@ public class SignUpActivity extends AppCompatActivity {
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(validationChecks.isEmailOrPhoneValid(email1.getText().toString())) {
-                    String email_sign = email1.getText().toString();
-                    SignUpFragment signUpFragment = SignUpFragment.newInstance(email_sign);
-                    replaceFragment(new SignUpFragment());
+                if(!email1.getText().toString().equals("")) {
+                    if (validationChecks.isEmailOrPhoneValid(email1.getText().toString())) {
+                        String email_sign = email1.getText().toString();
+                        SignUpFragment signUpFragment = SignUpFragment.newInstance(email_sign);
+                        replaceFragment(signUpFragment);
+                    } else {
+                        Toast.makeText(SignUpActivity.this, "Incorrect Email/Phone Syntax",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else{
-                    Toast.makeText(SignUpActivity.this, "Incorrect Email/Phone Syntax",
+                    Toast.makeText(SignUpActivity.this, "Email cannot be empty",
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -51,6 +56,10 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void replaceFragment(SignUpFragment signUpFragment) {
+        Bundle args = new Bundle();
+        args.putString("user_email", email1.getText().toString());
+        signUpFragment.setArguments(args);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.layout, signUpFragment);

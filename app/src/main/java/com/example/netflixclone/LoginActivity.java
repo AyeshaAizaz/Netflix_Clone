@@ -38,15 +38,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        String email_check = email.getText().toString();
+        String pass_check = pass.getText().toString();
 
         if(v.getId() == R.id.signIn){
-            if(validationChecks.isEmailOrPhoneValid(email.getText().toString()) ||
-                    validationChecks.isPasswordValid(pass.getText().toString())){
-                Intent login_intent = new Intent(LoginActivity.this, HomeActivity.class);
-                startActivity(login_intent);
+            if(!email_check.equals("") && !pass_check.equals("")) {
+                if (validationChecks.isEmailOrPhoneValid(email_check) ||
+                        validationChecks.isPasswordValid(pass_check)) {
+                    Intent login_intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    startActivity(login_intent);
+                } else {
+                    Toast.makeText(LoginActivity.this, "Incorrect Email/Phone or Password Syntax",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
             else{
-                Toast.makeText(LoginActivity.this, "Incorrect Email/Phone or Password Syntax",
+                Toast.makeText(LoginActivity.this, "Email/Password cannot be empty",
                         Toast.LENGTH_SHORT).show();
             }
         }
