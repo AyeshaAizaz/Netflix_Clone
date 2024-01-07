@@ -18,29 +18,36 @@ public class SignUpActivity extends AppCompatActivity {
     ImageButton im1;
     EditText email1;
     ValidationChecks validationChecks;
+    NetworkReceiver networkReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         email1 = (EditText) findViewById(R.id.email1);
         validationChecks = new ValidationChecks();
+        networkReceiver = new NetworkReceiver();
         start = (Button) findViewById(R.id.start);
         im1 = (ImageButton) findViewById(R.id.im1);
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!email1.getText().toString().equals("")) {
-                    if (validationChecks.isEmailOrPhoneValid(email1.getText().toString())) {
-                        String email_sign = email1.getText().toString();
-                        SignUpFragment signUpFragment = SignUpFragment.newInstance(email_sign);
-                        replaceFragment(signUpFragment);
+                if(networkReceiver.isNetworkAvailable(SignUpActivity.this)) {
+                    if (!email1.getText().toString().equals("")) {
+                        if (validationChecks.isEmailOrPhoneValid(email1.getText().toString())) {
+                            String email_sign = email1.getText().toString();
+                            SignUpFragment signUpFragment = SignUpFragment.newInstance(email_sign);
+                            replaceFragment(signUpFragment);
+                        } else {
+                            Toast.makeText(SignUpActivity.this, "Incorrect Email/Phone Syntax",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(SignUpActivity.this, "Incorrect Email/Phone Syntax",
+                        Toast.makeText(SignUpActivity.this, "Email cannot be empty",
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{
-                    Toast.makeText(SignUpActivity.this, "Email cannot be empty",
+                    Toast.makeText(SignUpActivity.this, "Please Connect to Network",
                             Toast.LENGTH_SHORT).show();
                 }
             }

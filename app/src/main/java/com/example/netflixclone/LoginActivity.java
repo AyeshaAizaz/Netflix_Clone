@@ -16,6 +16,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     ImageButton im;
     EditText email, pass;
     ValidationChecks validationChecks;
+    NetworkReceiver networkReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +25,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         email = (EditText) findViewById(R.id.email);
         pass = (EditText) findViewById(R.id.password);
         validationChecks = new ValidationChecks();
+        networkReceiver = new NetworkReceiver();
         login = (Button) findViewById(R.id.signIn);
         signUp = (Button) findViewById(R.id.signUp);
         im = (ImageButton) findViewById(R.id.im);
@@ -41,19 +43,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email_check = email.getText().toString();
         String pass_check = pass.getText().toString();
 
-        if(v.getId() == R.id.signIn){
-            if(!email_check.equals("") && !pass_check.equals("")) {
-                if (validationChecks.isEmailOrPhoneValid(email_check) ||
-                        validationChecks.isPasswordValid(pass_check)) {
-                    Intent login_intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    startActivity(login_intent);
+        if(v.getId() == R.id.signIn) {
+            if (networkReceiver.isNetworkAvailable(LoginActivity.this)) {
+                if (!email_check.equals("") && !pass_check.equals("")) {
+                    if (validationChecks.isEmailOrPhoneValid(email_check) ||
+                            validationChecks.isPasswordValid(pass_check)) {
+                        Intent login_intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        startActivity(login_intent);
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Incorrect Email/Phone or Password Syntax",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(LoginActivity.this, "Incorrect Email/Phone or Password Syntax",
+                    Toast.makeText(LoginActivity.this, "Email/Password cannot be empty",
                             Toast.LENGTH_SHORT).show();
                 }
             }
             else{
-                Toast.makeText(LoginActivity.this, "Email/Password cannot be empty",
+                Toast.makeText(LoginActivity.this, "Please Connect to Network",
                         Toast.LENGTH_SHORT).show();
             }
         }

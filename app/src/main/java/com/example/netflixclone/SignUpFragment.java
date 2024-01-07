@@ -23,6 +23,7 @@ public class SignUpFragment extends Fragment {
     private EditText emailEditText, passEditText;
     private static String email;
     ValidationChecks validationChecks;
+    NetworkReceiver networkReceiver;
     public SignUpFragment() {
         // Required empty public constructor
     }
@@ -39,6 +40,7 @@ public class SignUpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
         validationChecks = new ValidationChecks();
+        networkReceiver = new NetworkReceiver();
         // Use the correct ID for emailEditText
         emailEditText = view.findViewById(R.id.email2);
         passEditText = view.findViewById(R.id.password1);
@@ -55,21 +57,25 @@ public class SignUpFragment extends Fragment {
 
 
                 String password = passEditText.getText().toString();
-                if(!password.equals("")){
-                    if(ValidationChecks.isPasswordValid(password)){
-                        Intent signin_intent = new Intent(getActivity(), LoginActivity.class);
-                        getActivity().startActivity(signin_intent);
-                        Toast.makeText(getActivity(), "Account Creation Successful",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Log.d("PasswordValidation", "Incorrect Password Syntax: " + password);
-                        Toast.makeText(getActivity(), "Incorrect Password Syntax",
+                if(networkReceiver.isNetworkAvailable(getActivity())) {
+                    if (!password.equals("")) {
+                        if (ValidationChecks.isPasswordValid(password)) {
+                            Intent signin_intent = new Intent(getActivity(), LoginActivity.class);
+                            getActivity().startActivity(signin_intent);
+                            Toast.makeText(getActivity(), "Account Creation Successful",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d("PasswordValidation", "Incorrect Password Syntax: " + password);
+                            Toast.makeText(getActivity(), "Incorrect Password Syntax",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Password cannot be empty",
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{
-                    Toast.makeText(getActivity(), "Password cannot be empty",
+                    Toast.makeText(getActivity(), "Please Connect to Network",
                             Toast.LENGTH_SHORT).show();
                 }
             }
