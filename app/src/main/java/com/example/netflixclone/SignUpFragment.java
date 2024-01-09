@@ -1,7 +1,11 @@
 package com.example.netflixclone;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,25 +55,54 @@ public class SignUpFragment extends Fragment {
             // Set the email value to the emailEditText
             emailEditText.setText(email);
         }
+        
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
+                //final ContentValues values = new ContentValues();
+                String email_db = emailEditText.getText().toString();
                 String password = passEditText.getText().toString();
+                String[] projection = {DatabaseSchema.COLUMN_USEREMAIL};
+                String selection = DatabaseSchema.COLUMN_USEREMAIL + "=?";
+                String[] selectionArgs = {email_db};
+
+                Cursor cursor = getActivity().getContentResolver().query(DatabaseSchema.CONTENT_URI, projection, selection, selectionArgs, null);
+
                 if(networkReceiver.isNetworkAvailable(getActivity())) {
                     if (!password.equals("")) {
                         if (ValidationChecks.isPasswordValid(password)) {
-                            Intent signin_intent = new Intent(getActivity(), LoginActivity.class);
-                            getActivity().startActivity(signin_intent);
-                            Toast.makeText(getActivity(), "Account Creation Successful",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
+                            if (cursor != null && cursor.moveToFirst()) {
+                                // User already exists
+                                Toast.makeText(getActivity(), "User already registered", Toast.LENGTH_SHORT).show();
+                                cursor.close();
+                            } else {
+                                // User does not exist, proceed with registration
+                                ContentValues values = new ContentValues();
+                                values.put(DatabaseSchema.COLUMN_USEREMAIL, email_db);
+                                values.put(DatabaseSchema.COLUMN_USERPASS, password);
+                                Toast.makeText(getActivity(), "Item Inserted", Toast.LENGTH_SHORT).show();
+
+                                Uri resUri = getActivity().getContentResolver().insert(DatabaseSchema.CONTENT_URI, values);
+
+                                if (resUri != null) {
+                                    Toast.makeText(getActivity(), "User registered successfully", Toast.LENGTH_SHORT).show();
+                                    Intent signin_intent = new Intent(getActivity(), LoginActivity.class);
+                                    getActivity().startActivity(signin_intent);
+                                } else {
+                                    Toast.makeText(getActivity(), "Failed to register user", Toast.LENGTH_SHORT).show();
+                                }
+                                if (cursor != null) {
+                                    cursor.close();
+                                }
+                            }
+                        }
+                        else {
                             Log.d("PasswordValidation", "Incorrect Password Syntax: " + password);
                             Toast.makeText(getActivity(), "Incorrect Password Syntax",
                                     Toast.LENGTH_SHORT).show();
                         }
-                    } else {
+                    }
+                    else {
                         Toast.makeText(getActivity(), "Password cannot be empty",
                                 Toast.LENGTH_SHORT).show();
                     }
