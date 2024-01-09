@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +28,7 @@ public class SignUpFragment extends Fragment {
     ValidationChecks validationChecks;
     NetworkReceiver networkReceiver;
     public SignUpFragment() {
-        // Required empty public constructor
+
     }
 
     public static SignUpFragment newInstance(String email_sign) {
@@ -59,7 +58,6 @@ public class SignUpFragment extends Fragment {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //final ContentValues values = new ContentValues();
                 String email_db = emailEditText.getText().toString();
                 String password = passEditText.getText().toString();
                 String[] projection = {DatabaseSchema.COLUMN_USEREMAIL};
@@ -80,7 +78,6 @@ public class SignUpFragment extends Fragment {
                                 ContentValues values = new ContentValues();
                                 values.put(DatabaseSchema.COLUMN_USEREMAIL, email_db);
                                 values.put(DatabaseSchema.COLUMN_USERPASS, password);
-                                Toast.makeText(getActivity(), "Item Inserted", Toast.LENGTH_SHORT).show();
 
                                 Uri resUri = getActivity().getContentResolver().insert(DatabaseSchema.CONTENT_URI, values);
 

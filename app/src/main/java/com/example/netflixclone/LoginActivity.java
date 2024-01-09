@@ -1,6 +1,7 @@
 package com.example.netflixclone;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -42,13 +43,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email_check = email.getText().toString();
         String pass_check = pass.getText().toString();
 
+        String[] projection = {DatabaseSchema.COLUMN_USEREMAIL, DatabaseSchema.COLUMN_USERPASS};
+        String selection = DatabaseSchema.COLUMN_USEREMAIL + "=? AND " + DatabaseSchema.COLUMN_USERPASS + "=?";
+        String[] selectionArgs = {email_check, pass_check};
+
+        Cursor cursor = getContentResolver().query(DatabaseSchema.CONTENT_URI, projection, selection, selectionArgs, null);
+
+
         if(v.getId() == R.id.signIn) {
             if (networkReceiver.isNetworkAvailable(LoginActivity.this)) {
                 if (!email_check.equals("") && !pass_check.equals("")) {
                     if (validationChecks.isEmailOrPhoneValid(email_check) ||
                             validationChecks.isPasswordValid(pass_check)) {
-                        Intent login_intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        startActivity(login_intent);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            // User already exists
+                            Intent login_intent = new Intent(LoginActivity.this, HomeActivity.class);
+                            startActivity(login_intent);
+                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                            cursor.close();
+                        }
+                        else {
+                            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                        }
+                        if (cursor != null) {
+                            cursor.close();
+                        }
                     } else {
                         Toast.makeText(LoginActivity.this, "Incorrect Email/Phone or Password Syntax",
                                 Toast.LENGTH_SHORT).show();

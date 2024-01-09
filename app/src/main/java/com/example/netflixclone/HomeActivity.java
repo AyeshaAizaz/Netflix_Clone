@@ -76,7 +76,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(HomeActivity.this,
                 movieImageView,"sharedName");
 
-        startActivity(intent,options.toBundle());
+        startActivity(intent);
 
 
 
